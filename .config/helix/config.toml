@@ -2,12 +2,13 @@ theme = "onedark"
 
 [editor]
 line-number = "relative"
-rulers = [120]
+bufferline = "multiple"
+rulers = [100]
 
 [editor.cursor-shape]
 insert = "bar"
 normal = "block"
 select = "underline"
 
-[editor.file-picker]
-hidden = false
+[keys.normal]
+C-s = ":w"

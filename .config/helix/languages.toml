@@ -1,5 +1,27 @@
 [[language]]
 name = "python"
+scope = "source.python"
+roots = [".", "pyproject.toml"]
+language-servers = ["ruff", "pyright"]
+auto-format = false
+
+[language-server.ruff]
+command = "ruff-lsp"
+
+[language-server-ruff.config]
+settins = {args = []}
+
+[language-server.pyright]
+command = "pyright-langserver"
+args = ["--stdio"]
+
+[language-server.pyright.config]
+reportMissingTypeStubs = false
+
+[language-server.pyright.config.python.analysis]
+typeCheckingMode = "basic"
+autoImportCompletions = true
+
 
 [[language]]
 name = "rust"
