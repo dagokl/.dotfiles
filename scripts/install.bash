@@ -20,6 +20,12 @@ install_regolith=$?
 ask_yes_no "Install Helix? [Y/n]" "y"
 install_helix=$?
 
+ask_yes_no "Install Pyright and Ruff LSPs? [Y/n]" "y"
+install_python_lsps=$?
+
+ask_yes_no "Install LSPs? [Y/n]" "y"
+install_python_lsp=$?
+
 ask_yes_no "Install Starship? [Y/n]" "y"
 install_starship=$?
 
@@ -29,16 +35,18 @@ install_kitty=$?
 ask_yes_no "Make Kitty default terminal? [Y/n]" "y"
 make_kitty_default=$?
 
+ask_yes_no "Install misc usefull packages? [Y/n]" "y"
+install_misc_packages=$?
 
+ask_yes_no "Add deadsnakes PPA? [Y/n]" "y"
+add_deadsnakes=$?
+
+
+# Some packages needed for rest of setup
 sudo apt update -y
 sudo apt upgrade -y
 sudo apt install -y \
     curl \
-    git \
-    htop \
-    python3-pip \
-    python3-venv \
-    vlc \
     wget
 
 
@@ -57,23 +65,21 @@ if [[ $install_regolith -eq true ]]; then
     if [[ $distro == "Ubuntu 20.04" ]]; then
         wget -qO - https://regolith-desktop.org/regolith.key | sudo apt-key add -
 
-        echo deb "[arch=amd64] https://regolith-desktop.org/release-ubuntu-focal-amd64 focal main" | \
+        echo deb "[arch=amd64] https://regolith-desktop.org/release-3_0-ubuntu-focal-amd64 focal main" | \
         sudo tee /etc/apt/sources.list.d/regolith.list
 
         sudo apt update
-        sudo apt install -y regolith-desktop regolith-compositor-picom-glx i3xrocks-battery
-        sudo apt upgrade -y
+        sudo apt install -y regolith-desktop regolith-session-flashback regolith-look-lascaille i3xrocks-battery
     elif [[ $distro == "Ubuntu 22.04" ]]; then
         wget -qO - https://regolith-desktop.org/regolith.key | \
         gpg --dearmor | sudo tee /usr/share/keyrings/regolith-archive-keyring.gpg > /dev/null
-
+        
         echo deb "[arch=amd64 signed-by=/usr/share/keyrings/regolith-archive-keyring.gpg] \
-        https://regolith-desktop.org/release-ubuntu-jammy-amd64 jammy main" | \
+        https://regolith-desktop.org/release-3_0-ubuntu-jammy-amd64 jammy main" | \
         sudo tee /etc/apt/sources.list.d/regolith.list
 
         sudo apt update
-        sudo apt install -y regolith-desktop regolith-compositor-picom-glx i3xrocks-battery
-        sudo apt upgrade -y
+        sudo apt install regolith-desktop regolith-session-flashback regolith-look-lascaille i3xrocks-battery
     else
         echo "Regolith install only works on Ubuntu 20.04 and 22.04"
     fi
@@ -88,10 +94,19 @@ if [[ $install_helix -eq true ]]; then
 fi
 
 
+# Python Language Servers
+if [[ $install_python_lsps -eq true ]]; then
+    sudo apt install python3-pip
+    pip install pyright ruff-lsp
+fi
+
+
 # Starship
 if [[ $install_starship -eq true ]]; then
-    # TODO auto yes for shell script
-    curl -sS https://starship.rs/install.sh | sh
+    curl -sS -o install_starship.sh https://starship.rs/install.sh
+    chmod +x ./install_starship.sh
+    sh ./install_starship.sh -y
+    rm ./install_starship.sh
     echo 'eval "$(starship init bash)"' >> ~/.bashrc
 fi
 
@@ -113,7 +128,26 @@ if [[ $install_kitty -eq true ]]; then
     sed -i "s|Exec=kitty|Exec=/home/$USER/.local/kitty.app/bin/kitty|g" ~/.local/share/applications/kitty*.desktop
 fi
 
+
 if [[ $make_kitty_default -eq true ]]; then
     sudo update-alternatives --install /usr/bin/x-terminal-emulator x-terminal-emulator ~/.local/kitty.app/bin/kitty 50
     # sudo update-alternatives --config x-terminal-emulator
+fi
+
+
+if [[ $install_misc_packages -eq true ]]; then
+    sudo apt update -y
+    sudo apt upgrade -y
+    sudo apt install -y \
+        htop \
+        python3-pip \
+        python3-venv \
+        python3-dev \
+        vlc
+fi
+
+
+if [[ $add_deaksnakes -eq true ]]; then
+    sudo apt install software-properties-common
+    sudo add-apt-repository ppa:deadsnakes/ppa
 fi
