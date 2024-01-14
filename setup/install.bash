@@ -1,6 +1,7 @@
 #!/bin/bash
 
-. scripts/install_utils.bash
+script_dir="$(dirname "$0")"
+. "$script_dir"/install_utils.bash
 sudo -v
 
 # distro will have value like "Ubuntu 20.04" or "Ubuntu 22.04"
