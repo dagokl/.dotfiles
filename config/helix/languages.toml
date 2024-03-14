@@ -1,4 +1,14 @@
 [[language]]
+name = "bash"
+file-types = ["bashrc"]
+
+
+[[language]]
+name = "cpp"
+indent = { tab-width = 4, unit = "    " }
+
+
+[[language]]
 name = "python"
 scope = "source.python"
 roots = [".", "pyproject.toml"]

@@ -1,23 +1,25 @@
 #!/bin/bash
 
 replace_with_symlink() {
-    local target="$1"
-    local link_name="$2"
+    local target=$1
+    local link_name=$2
 
-    if [ -e "$link_name" ] || [ -L "$link_name" ]; then
-        rm -rf "$link_name"
+    if [ -e $link_name ] || [ -L $link_name ]; then
+        rm -rf $link_name
     fi
 
-    ln -s "$target" "$link_name"
+    ln -s $target $link_name
 }
 
 dotfiles_path="$(readlink -f "$(dirname "$0")/..")"
-src_config_path="$dotfiles_path/config"
-dest_config_path="$HOME/.config"
+src_config_path=$dotfiles_path/config
+dest_config_path=$HOME/.config
 
-for src_path in "$src_config_path"/*; do
+replace_with_symlink $dotfiles_path/bashrc $HOME/.bashrc
+
+for src_path in $src_config_path/*; do
     name="$(basename "$src_path")"
-    link_path="$dest_config_path/$name"
+    link_path=$dest_config_path/$name
 
-    replace_with_symlink "$src_path" "$link_path"
+    replace_with_symlink $src_path $link_path
 done

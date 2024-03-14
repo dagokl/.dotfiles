@@ -24,8 +24,8 @@ install_helix=$?
 ask_yes_no "Install Pyright and Ruff LSPs? [Y/n]" "y"
 install_python_lsps=$?
 
-ask_yes_no "Install LSPs? [Y/n]" "y"
-install_python_lsp=$?
+ask_yes_no "Install Bash LSP? [Y/n]" "y"
+install_bash_lsp=$?
 
 ask_yes_no "Install Starship? [Y/n]" "y"
 install_starship=$?
@@ -35,6 +35,9 @@ install_kitty=$?
 
 ask_yes_no "Make Kitty default terminal? [Y/n]" "y"
 make_kitty_default=$?
+
+ask_yes_no "Install Lazygit? [Y/n]" "y"
+install_lazygit=$?
 
 ask_yes_no "Install misc usefull packages? [Y/n]" "y"
 install_misc_packages=$?
@@ -66,7 +69,7 @@ if [[ $install_regolith -eq true ]]; then
     if [[ $distro == "Ubuntu 20.04" ]]; then
         wget -qO - https://regolith-desktop.org/regolith.key | sudo apt-key add -
 
-        echo deb "[arch=amd64] https://regolith-desktop.org/release-3_0-ubuntu-focal-amd64 focal main" | \
+        echo deb "[arch=amd64] https://regolith-desktop.org/release-3_1-ubuntu-focal-amd64 focal main" | \
         sudo tee /etc/apt/sources.list.d/regolith.list
 
         sudo apt update
@@ -76,7 +79,7 @@ if [[ $install_regolith -eq true ]]; then
         gpg --dearmor | sudo tee /usr/share/keyrings/regolith-archive-keyring.gpg > /dev/null
         
         echo deb "[arch=amd64 signed-by=/usr/share/keyrings/regolith-archive-keyring.gpg] \
-        https://regolith-desktop.org/release-3_0-ubuntu-jammy-amd64 jammy main" | \
+        https://regolith-desktop.org/release-3_1-ubuntu-jammy-amd64 jammy main" | \
         sudo tee /etc/apt/sources.list.d/regolith.list
 
         sudo apt update
@@ -99,6 +102,12 @@ fi
 if [[ $install_python_lsps -eq true ]]; then
     sudo apt install python3-pip
     pip install pyright ruff-lsp
+fi
+
+
+# Bash Language Server
+if [[ $install_bash_lsp -eq true ]]; then
+    sudo snap install bash-language-server --classic
 fi
 
 
@@ -148,7 +157,16 @@ if [[ $install_misc_packages -eq true ]]; then
 fi
 
 
-if [[ $add_deaksnakes -eq true ]]; then
+if [[ $add_deadsnakes -eq true ]]; then
     sudo apt install software-properties-common
     sudo add-apt-repository ppa:deadsnakes/ppa
+fi
+
+
+if [[ $install_lazygit -eq true ]]; then
+    LAZYGIT_VERSION=$(curl -s "https://api.github.com/repos/jesseduffield/lazygit/releases/latest" | grep -Po '"tag_name": "v\K[^"]*')
+    curl -Lo lazygit.tar.gz "https://github.com/jesseduffield/lazygit/releases/latest/download/lazygit_${LAZYGIT_VERSION}_Linux_x86_64.tar.gz"
+    tar xf lazygit.tar.gz lazygit
+    sudo install lazygit /usr/local/bin
+    rm -f lazygit.tar.gz lazygit
 fi
