@@ -121,3 +121,7 @@ alias rc='hx ~/.bashrc; . ~/.bashrc;'
 alias icat='kitty +kitten icat'
 
 alias naive_driving_agent='cd ~/src/naive_driving_agent; poetry shell;'
+
+# TODO: Do this in a better way
+setxkbmap -option caps:escape
+
